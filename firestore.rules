@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == "r3l2LTXhgQg5x20J9dX6lw7gv8h1";
+    }
+    // ሥራዎች፦ ሕዝብ የታተሙትን ብቻ ያነባል፤ አስተዳዳሪ ሁሉንም
+    match /jobs/{id} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      // ድርጅቶች ሥራ ማስገባት የሚችሉት 'pending' ሆኖ ብቻ ነው (አስተዳዳሪ ሲያጸድቅ ይታያል)
+      allow create: if isAdmin() || (
+        request.resource.data.status == 'pending' &&
+        request.resource.data.active == true &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.keys().hasOnly(['title','company','sector','type','salary','location','address','deadline','gender','requirements','desc','apply','phone','active','status','createdAt']) &&
+        request.resource.data.keys().hasAll(['title','company','deadline','desc','status']) &&
+        request.resource.data.title is string && request.resource.data.title.size() < 120 &&
+        request.resource.data.company is string && request.resource.data.company.size() < 120 &&
+        request.resource.data.deadline is string && request.resource.data.deadline.size() == 10 &&
+        request.resource.data.desc is string && request.resource.data.desc.size() < 2000 &&
+        request.resource.data.get('requirements','').size() < 1000 &&
+        request.resource.data.get('apply','').size() < 300 &&
+        request.resource.data.get('salary','').size() < 80 &&
+        request.resource.data.get('location','').size() < 100 &&
+        request.resource.data.get('address','').size() < 150
+      );
+      allow update, delete: if isAdmin();
+    }
+    // ማስታወቂያዎች፦ ድርጅቶች 'pending' ብቻ ማስገባት ይችላሉ፤ የጸደቁት ብቻ ይታያሉ
+    match /ads/{id} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow create: if isAdmin() || (
+        request.resource.data.status == 'pending' &&
+        request.resource.data.keys().hasOnly(['company','title','text','link','imageUrl','logo','phone','status','createdAt']) &&
+        request.resource.data.company is string && request.resource.data.company.size() < 120 &&
+        request.resource.data.title is string && request.resource.data.title.size() < 120 &&
+        request.resource.data.text is string && request.resource.data.text.size() < 400 &&
+        request.resource.data.link is string && request.resource.data.link.size() < 300 &&
+        request.resource.data.get('logo','').size() < 120000
+      );
+      allow update, delete: if isAdmin();
+    }
+    // ቅንብሮች (የማስታወቂያ ሰከንድ፣ ማኅበራዊ ሊንኮች)
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    // የጎብኚ ቆጣሪ፦ ሕዝብ በ1 ብቻ መጨመር ይችላል፤ ማንበብ አስተዳዳሪ ብቻ
+    match /visits/{id} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['count']) && request.resource.data.count == 1;
+      allow update: if request.resource.data.keys().hasOnly(['count']) && request.resource.data.count == resource.data.count + 1;
+    }
+  }
+}
