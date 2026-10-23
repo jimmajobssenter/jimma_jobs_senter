@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>አስተዳዳሪ · ጅማ ሥራ ፖርታል</title>
+<script>document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="grad"><div class="wrap"><nav>
+  <a class="logo" href="./admin.html"><i aria-hidden="true">🔒</i>የጅማ አስተዳዳሪ</a>
+  <a class="l" href="./">ሕዝብ ገጽ ይመልከቱ</a>
+  <button class="btn ghost sm" id="logout" hidden>ውጣ</button>
+</nav></div></header>
+
+<form class="card login" id="login">
+  <h2>የአስተዳዳሪ መግቢያ</h2>
+  <label>ስልክ ቁጥር<input type="tel" id="phone" inputmode="numeric" placeholder="09XXXXXXXX" required autocomplete="username"></label>
+  <label>የይለፍ ቃል<input type="password" id="pw" required autocomplete="current-password"></label>
+  <p class="err" id="err" role="alert" hidden></p>
+  <button class="btn" type="submit">ግባ</button>
+</form>
+
+<main class="wrap" id="dash" hidden style="padding-top:24px;padding-bottom:48px">
+  <h1 style="font-size:26px">የአስተዳዳሪ ገጽ</h1>
+  <div class="stats" id="stats"></div>
+
+  <form class="card form" id="form"><h2 class="full">አዲስ ሥራ</h2>
+    <label>የሥራ ርዕስ<input name="title" required></label>
+    <label>የድርጅት ስም<input name="company" required></label>
+    <label>ዘርፍ<select name="sector" id="sector"></select><input name="sectorOther" id="sectorOther" hidden maxlength="60" placeholder="ዘርፉን ይጻፉ"></label>
+    <label>የቅጥር ዓይነት<select name="type" id="type"></select></label>
+    <label>ደመወዝ<input name="salary" placeholder="ለምሳሌ፦ 8,000 ብር በወር"></label>
+    <label>ቦታ<input name="location" value="ጅማ" required></label>
+    <div class="lbl"><span>የመጨረሻ ቀን (ዓ.ም)</span><div id="ethp"></div></div>
+    <label style="align-content:end"><span><input type="checkbox" name="vip" style="width:auto"> ተመራጭ (VIP) አድርግ</span></label>
+    <label>ጾታ<select name="gender" id="gender"></select></label>
+    <label>አድራሻ<input name="address" placeholder="ለምሳሌ፦ ቦሬ፣ ከቡና ገበያ አጠገብ"></label>
+    <label class="full">ተፈላጊ መስፈርት<textarea name="requirements" rows="3" placeholder="ለምሳሌ፦ ዲፕሎማ፣ 2 ዓመት ልምድ…"></textarea></label>
+    <label class="full">የማመልከቻ መንገድ (ሊንክ ወይም ጽሁፍ)<input name="apply" placeholder="https://… ወይም «በስልክ 09… ይደውሉ»"></label>
+    <label class="full">መግለጫ<textarea name="desc" rows="4" required></textarea></label>
+    <div class="full acts"><button class="btn" type="submit" value="published">ሥራውን አትም</button><button class="btn ghost" type="submit" value="draft">በመጠባበቅ ላይ አስቀምጥ</button></div>
+  </form>
+  <div class="card tbl" style="margin-bottom:28px"><table><thead><tr><th>ሥራ</th><th>ድርጅት</th><th>የመጨረሻ ቀን</th><th>ሁኔታ</th><th>እርምጃዎች</th></tr></thead><tbody id="rows"></tbody></table></div>
+
+  <h2 style="margin-bottom:12px">ማስታወቂያዎች</h2>
+  <div class="card" style="padding:14px 18px;margin-bottom:14px"><b style="font-size:14px">ድርጅቶች ማስታወቂያ የሚያስገቡበት ሊንክ፦</b>
+    <div style="display:flex;gap:8px;margin-top:8px"><input id="advlink" readonly style="flex:1;min-width:0;border:1px solid var(--bd);border-radius:10px;padding:8px 10px"><button class="btn sm" id="copy" type="button">ቅዳ</button></div></div>
+  <form class="card form" id="adform"><h3 class="full">ማስታወቂያ ጨምር (በቀጥታ ይታያል)</h3>
+    <label>የድርጅት ስም<input name="company" required></label>
+    <label>የማስታወቂያ ርዕስ<input name="title" required></label>
+    <label class="full">መግለጫ<input name="text" required></label>
+    <label>ሊንክ<input type="url" name="link" placeholder="https://"></label>
+    <label>ሎጎ (አማራጭ)<input type="file" name="logo" accept="image/*"></label>
+    <div class="full"><button class="btn amber" type="submit">ማስታወቂያውን አትም</button></div>
+  </form>
+  <div class="card tbl" style="margin-bottom:28px"><table><thead><tr><th>ማስታወቂያ</th><th>ድርጅት</th><th>ሁኔታ</th><th>እርምጃዎች</th></tr></thead><tbody id="adrows"></tbody></table></div>
+
+  <form class="card form" id="setform"><h3 class="full">ቅንብሮች</h3>
+    <label>የማስታወቂያ መቀያየሪያ (ሰከንድ)<input type="number" name="adSeconds" min="3" value="8"></label><span></span>
+    <label>ቲክቶክ ሊንክ<input type="url" name="tiktok" placeholder="https://"></label>
+    <label>ፌስቡክ ሊንክ<input type="url" name="facebook" placeholder="https://"></label>
+    <label>ኢንስታግራም ሊንክ<input type="url" name="instagram" placeholder="https://"></label>
+    <label>ቴሌግራም ሊንክ<input type="url" name="telegram" placeholder="https://t.me/…"></label>
+    <div class="full"><button class="btn" type="submit">ቅንብሮችን አስቀምጥ</button></div>
+  </form>
+</main>
+
+<script type="module">
+import { db, auth, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, esc, fmt, isOpen, safeUrl, safeLogo, fileToLogo, today, toast } from "./firebase-config.js";
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const $ = s => document.querySelector(s);
+let jobs = [], ads = [], visits = {}, unsubs = [], filled = false;
+$("#sector").innerHTML = SECTORS.map(s => `<option>${esc(s)}</option>`).join("");
+bindOther($("#sector"), $("#sectorOther"));
+const ep = ethPicker($("#ethp"), "am", today());
+$("#gender").innerHTML = GENDERS.map(s => `<option>${esc(s)}</option>`).join("");
+$("#type").innerHTML = TYPES.map(s => `<option>${esc(s)}</option>`).join("");
+$("#advlink").value = new URL("advertise.html", location.href).href;
+$("#copy").onclick = () => navigator.clipboard.writeText($("#advlink").value).then(() => toast("ተቀድቷል"));
+
+const phoneToEmail = p => p.replace(/\D/g,"") + "@jimmajobs.app";
+$("#login").onsubmit = async e => {
+  e.preventDefault(); $("#err").hidden = true;
+  try { await signInWithEmailAndPassword(auth, phoneToEmail($("#phone").value), $("#pw").value); }
+  catch (err) {
+    console.error(err);
+    const M = {"auth/invalid-credential":"ስልክ ቁጥር ወይም የይለፍ ቃል ትክክል አይደለም።","auth/wrong-password":"ስልክ ቁጥር ወይም የይለፍ ቃል ትክክል አይደለም።","auth/user-not-found":"ይህ ስልክ ቁጥር አልተመዘገበም።","auth/invalid-api-key":"የ Firebase ቅንብር (apiKey) ትክክል አይደለም።","auth/api-key-not-valid":"የ Firebase ቅንብር (apiKey) ትክክል አይደለም።","auth/unauthorized-domain":"ይህ ዶሜን በ Firebase አልተፈቀደም።","auth/operation-not-allowed":"Email/Password አልበራም።","auth/network-request-failed":"የኢንተርኔት ግንኙነት የለም።","auth/too-many-requests":"ብዙ ጊዜ ሞክረዋል። ቆይተው ይሞክሩ።"};
+    $("#err").textContent = M[err.code] || "ስህተት፦ " + (err.code || err.message); $("#err").hidden = false;
+  }
+};
+$("#logout").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, user => {
+  $("#login").hidden = !!user; $("#dash").hidden = !user; $("#logout").hidden = !user;
+  unsubs.forEach(u => u()); unsubs = []; filled = false;
+  if(!user) return;
+  const er = e => console.error(e);
+  unsubs.push(onSnapshot(query(collection(db,"jobs"), orderBy("createdAt","desc")), s => { jobs = s.docs.map(d => ({id:d.id, ...d.data()})); draw(); }, er));
+  unsubs.push(onSnapshot(collection(db,"ads"), s => { ads = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (b.createdAt?.toMillis?.()||0) - (a.createdAt?.toMillis?.()||0)); draw(); }, er));
+  unsubs.push(onSnapshot(collection(db,"visits"), s => { visits = {}; s.forEach(d => visits[d.id] = d.data().count || 0); draw(); }, er));
+  unsubs.push(onSnapshot(doc(db,"settings","site"), s => { if(filled) return; filled = true; const d = s.data() || {}, f = $("#setform"); ["adSeconds","tiktok","facebook","instagram","telegram"].forEach(k => { if(d[k]) f[k].value = d[k]; }); }, er));
+});
+
+const st = j => j.status === "pending" ? ["ከድርጅት የደረሰ","b-vip"] : j.status === "draft" ? ["በመጠባበቅ ላይ","b-type"] : isOpen(j) ? ["ንቁ","b-open"] : ["ዝግ","b-closed"];
+function draw(){
+  const pub = jobs.filter(j => !["draft","pending"].includes(j.status)), open = pub.filter(isOpen).length, pj = jobs.filter(j => j.status === "pending").length;
+  
+  $("#stats").innerHTML = [[open,"ጠቅላላ ንቁ ሥራዎች","var(--open)"],[pub.length-open,"ያለፈባቸው ሥራዎች","var(--red)"],[ads.filter(a => a.status==="pending").length,"በመጠባበቅ ላይ ያሉ ማስታወቂያዎች","var(--info)"],[pj,"ከድርጅቶች የመጡ ሥራዎች (ይጸድቁ)","var(--info)"],[visits.total||0,"ጠቅላላ ጎብኚዎች (አዲስ መሳሪያ)","var(--am)"]]
+    .map(s => `<div class="card stat" style="border-left:4px solid ${s[2]}"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");
+  $("#rows").innerHTML = jobs.length ? jobs.map(j => { const [t,c] = st(j); return `<tr><td><b>${esc(j.title)}</b>${j.vip?' <span class="badge b-vip">VIP</span>':""}</td><td>${esc(j.company)}${j.phone?`<br><small>📞 ${esc(j.phone)}</small>`:""}</td><td>${fmt(j.deadline,"am")}</td><td><span class="badge ${c}">${t}</span></td><td class="acts">${["draft","pending"].includes(j.status)?`<button class="btn sm" data-a="pub" data-id="${j.id}">${j.status==="pending"?"አጽድቅ":"አትም"}</button>`:`<button class="btn ghost sm" data-a="tog" data-id="${j.id}">${j.active?"ዝጋ":"እንደገና ክፈት"}</button>`}<button class="btn danger sm" data-a="del" data-id="${j.id}">ሰርዝ</button></td></tr>`; }).join("")
+    : '<tr><td colspan="5" class="empty">እስካሁን ሥራ የለም።</td></tr>';
+  const S = {pending:["በመጠባበቅ ላይ","b-vip"],approved:["ይታያል","b-open"],hidden:["የተደበቀ","b-closed"]};
+  $("#adrows").innerHTML = ads.length ? ads.map(a => { const [t,c] = S[a.status] || S.hidden, l = safeUrl(a.link); return `<tr><td>${safeLogo(a.logo)?`<img src="${esc(safeLogo(a.logo))}" alt="" width="36" height="36" style="float:left;margin-right:8px;object-fit:contain;border:1px solid var(--bd);border-radius:8px;background:#fff">`:""}<b>${esc(a.title)}</b><br><small style="color:var(--mut)">${esc(a.text||"")}</small>${l?`<br><a href="${esc(l)}" target="_blank" rel="noopener" style="font-size:13px">${esc(l)}</a>`:""}</td><td>${esc(a.company)}${a.phone?`<br><small>📞 ${esc(a.phone)}</small>`:""}</td><td><span class="badge ${c}">${t}</span></td><td class="acts">${a.status==="approved"?`<button class="btn ghost sm" data-aa="hide" data-id="${a.id}">ደብቅ</button>`:`<button class="btn sm" data-aa="ok" data-id="${a.id}">${a.status==="pending"?"አጽድቅ":"አሳይ"}</button>`}<button class="btn danger sm" data-aa="del" data-id="${a.id}">ሰርዝ</button></td></tr>`; }).join("")
+    : '<tr><td colspan="4" class="empty">ማስታወቂያ የለም።</td></tr>';
+}
+
+const run = async fn => { try { await fn(); } catch(err){ console.error(err); toast("አልተሳካም። ፈቃድዎን ያረጋግጡ።"); } };
+$("#rows").onclick = e => { const b = e.target.closest("[data-a]"); if(!b) return; const j = jobs.find(x => x.id === b.dataset.id), r = doc(db,"jobs",j.id);
+  run(async () => { if(b.dataset.a==="pub"){ await updateDoc(r,{status:"published", createdAt:serverTimestamp()}); toast("ሥራው ታትሟል"); }
+    else if(b.dataset.a==="tog"){ await updateDoc(r,{active:!j.active}); toast(j.active?"ሥራው ተዘግቷል":"ሥራው እንደገና ተከፍቷል"); }
+    else if(confirm("ይህን ሥራ ይሰርዙ?")){ await deleteDoc(r); toast("ሥራው ተሰርዟል"); } }); };
+$("#adrows").onclick = e => { const b = e.target.closest("[data-aa]"); if(!b) return; const r = doc(db,"ads",b.dataset.id);
+  run(async () => { const k = b.dataset.aa;
+    if(k==="del"){ if(confirm("ይህን ማስታወቂያ ይሰርዙ?")){ await deleteDoc(r); toast("ተሰርዟል"); } }
+    else { await updateDoc(r,{status: k==="ok"?"approved":"hidden"}); toast(k==="ok"?"ማስታወቂያው ይታያል":"ማስታወቂያው ተደብቋል"); } }); };
+
+$("#form").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)), status = e.submitter?.value || "published";
+  run(async () => { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:f.type, salary:f.salary, location:f.location, deadline:f.deadline, apply:f.apply||"", requirements:f.requirements||"", gender:f.gender, address:f.address||"", vip:!!f.vip, active:true, desc:f.desc, status, createdAt:serverTimestamp() });
+    e.target.reset(); ep.clear(); e.target.location.value = "ጅማ"; toast(status==="draft" ? "በመጠባበቅ ላይ ተቀምጧል" : "ሥራው ታትሟል"); }); };
+$("#adform").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+  if((f.link && !safeUrl(f.link)) || (f.imageUrl && !safeUrl(f.imageUrl))) return toast("ሊንኩ በ https:// መጀመር አለበት");
+  { const form = e.target, file = form.elements.logo.files[0]; run(async () => { let logo = ""; if(file){ try { logo = await fileToLogo(file); } catch { return toast("ሎጎውን ማንበብ አልተቻለም"); } } await addDoc(collection(db,"ads"), { company:f.company, title:f.title, text:f.text, link:f.link||"", logo, phone:"", status:"approved", createdAt:serverTimestamp() }); form.reset(); toast("ማስታወቂያው ታትሟል"); }); } };
+$("#setform").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+  run(async () => { await setDoc(doc(db,"settings","site"), { adSeconds:Math.max(3, +f.adSeconds || 8), tiktok:f.tiktok, facebook:f.facebook, instagram:f.instagram, telegram:f.telegram }, {merge:true}); toast("ቅንብሮች ተቀምጠዋል"); }); };
+</script>
+</body>
+</html>
