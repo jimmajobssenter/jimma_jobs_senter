@@ -52,6 +52,25 @@ export function fileToLogo(file){
   });
 }
 
+// የሥራ ፎቶ/ፖስተር፦ እስከ 900px፣ ከ ~110KB በታች እንዲሆን ይጨመቃል
+export function fileToPhoto(file){
+  return new Promise((res, rej) => {
+    if(!file || !/^image\//.test(file.type)) return rej(new Error("type"));
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      for(const [max, q] of [[900,.72],[900,.55],[760,.55],[640,.5],[520,.45]]){
+        const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+        const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+        const d = c.toDataURL("image/jpeg", q); if(d.length <= 110000) return res(d);
+      }
+      rej(new Error("size"));
+    };
+    img.onerror = () => rej(new Error("load")); img.src = url;
+  });
+}
+
 // ===== የኢትዮጵያ ካላንደር =====
 const EM_AM = ["መስከረም","ጥቅምት","ኅዳር","ታኅሣሥ","ጥር","የካቲት","መጋቢት","ሚያዝያ","ግንቦት","ሰኔ","ሐምሌ","ነሐሴ","ጳጉሜ"];
 const EM_EN = ["Meskerem","Tikimt","Hidar","Tahsas","Tir","Yekatit","Megabit","Miazia","Ginbot","Sene","Hamle","Nehase","Pagume"];
