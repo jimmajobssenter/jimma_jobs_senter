@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="google-site-verification" content="gkhK1RNqtipx0EYW-7dnU2qt1TVAwxxEvLOU3az3qoo" />
+<meta name="description" content="በጅማና አካባቢው የሚወጡ አዳዲስ የሥራ ማስታወቂያዎችን ይመልከቱ፤ ድርጅቶችም ሥራና ማስታወቂያ ያስነግሩ።">
+<link rel="canonical" href="https://USERNAME.github.io/REPO-NAME/">
+<!-- Open Graph (Facebook, Telegram, WhatsApp, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ጅማ ሥራ ፖርታል">
+<meta property="og:title" content="ጅማ ሥራ ፖርታል · በጅማ ሥራ ያግኙ">
+<meta property="og:description" content="በጅማና አካባቢው የሚወጡ አዳዲስ የሥራ ማስታወቂያዎችን ይመልከቱ፤ ድርጅቶችም ሥራና ማስታወቂያ ያስነግሩ።">
+<meta property="og:url" content="https://USERNAME.github.io/REPO-NAME/">
+<meta property="og:image" content="https://USERNAME.github.io/REPO-NAME/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ጅማ ሥራ ፖርታል ሎጎ በጅማ ከተማ ዳራ ላይ">
+<meta property="og:locale" content="am_ET">
+<meta property="og:locale:alternate" content="en_US">
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ጅማ ሥራ ፖርታል · በጅማ ሥራ ያግኙ">
+<meta name="twitter:description" content="በጅማና አካባቢው የሚወጡ አዳዲስ የሥራ ማስታወቂያዎችን ይመልከቱ።">
+<meta name="twitter:image" content="https://USERNAME.github.io/REPO-NAME/og-image.jpg">
+<title>ጅማ ሥራ ፖርታል</title>
+<script>document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#064E3B">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preload" as="image" href="hero.jpg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="grad"><div class="wrap"><nav>
+  <button class="ibtn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer" data-i18n-aria="menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <button class="ibtn" id="themeBtn" type="button">🌙</button>
+  <a class="logo" href="./"><i aria-hidden="true">💼</i><span data-i18n="title">ጅማ ሥራ ፖርታል</span></a>
+  <button class="lpill" id="langBtn" type="button" aria-label="Language"><span data-lg="am">አማ</span><span data-lg="en">EN</span></button>
+  <button class="ibtn" id="bell" type="button" hidden data-i18n-title="notify" data-i18n-aria="notify">🔔</button>
+  <a class="btn amber hide-m" href="advertise.html#job" data-i18n="post">ሥራ ያስተዋውቁ</a>
+</nav></div></header>
+
+<div class="scrim" id="scrim"></div>
+<aside id="drawer" inert aria-label="Menu">
+  <div class="dhead"><span data-i18n="title">ጅማ ሥራ ፖርታል</span><button class="x" id="dclose" type="button" data-i18n-aria="close" aria-label="ዝጋ">×</button></div>
+  <nav class="dnav" aria-label="Main">
+    <a href="#top" class="act" data-i18n="home">ዋና ገጽ</a>
+    <a href="#about" data-i18n="about">ስለ እኛ</a>
+    <a href="#jobsec" data-i18n="jobs">ሥራዎች</a>
+    <a href="advertise.html#job" data-i18n="post">ሥራ ያስተዋውቁ</a>
+    <a href="#contact" data-i18n="contact">አድራሻ</a>
+    <div class="dsep"></div>
+    <a href="admin.html" data-i18n="login">አስተዳዳሪ መግቢያ</a>
+    <a href="advertise.html" data-i18n="register">ድርጅት ይመዝገቡ</a>
+  </nav>
+  <div class="dset"><div class="dsep" style="margin:0 0 8px"></div><h3 data-i18n="settings" style="font-size:16px">ቅንብር</h3>
+    <h4 data-i18n="language">ቋንቋ</h4><div class="seg"><button type="button" data-l="am">አማርኛ</button><button type="button" data-l="en">English</button></div>
+    <h4 data-i18n="theme">ገጽታ</h4><div class="seg"><button type="button" data-th="light">☀️ <span data-i18n="light">ብርሃን</span></button><button type="button" data-th="dark">🌙 <span data-i18n="dark">ጨለማ</span></button></div>
+    <button class="btn inst" type="button" style="width:100%;margin-top:16px" data-i18n="install">📲 አፑን ጫን</button>
+  </div>
+</aside>
+
+<div class="adstrip" id="adbox" hidden aria-live="polite"></div>
+
+<section class="grad hero" id="top"><div class="wrap">
+  <h1><span class="en">Find work in Jimma</span><span class="am">በጅማ ሥራ ያግኙ</span><span class="bar" aria-hidden="true"></span></h1>
+  <form class="search" role="search" onsubmit="return false" style="margin-top:22px"><input id="q" type="search" data-i18n-ph="searchPh" data-i18n-aria="search" placeholder="…"><select id="sec" data-i18n-aria="sector" aria-label="ዘርፍ"></select></form>
+</div></section>
+
+<div class="wrap main">
+  <section id="jobsec"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px"><h2 data-i18n="latest">የቅርብ ጊዜ ሥራዎች</h2><span id="count" style="color:var(--mut);font-size:13.5px"></span></div><div id="jobs"><div class="card empty" data-i18n="loading">በመጫን ላይ…</div></div></section>
+  <aside class="side">
+    <div class="card" id="contact" style="padding:18px"><h3 data-i18n="hiring">ሠራተኛ ይፈልጋሉ?</h3><p data-i18n="hiringTxt" style="color:var(--mut);margin:6px 0 14px;font-size:14px"></p>
+      <div style="font-size:14px;display:grid;gap:4px"><a href="tel:0917794343" style="color:inherit;text-decoration:none">📞 0917794343</a><a href="mailto:winner.as177@gmail.com" style="color:inherit;text-decoration:none;overflow-wrap:anywhere">✉️ winner.as177@gmail.com</a><span>📍 <span data-i18n="loc">ጅማ፣ ኦሮሚያ</span></span></div></div>
+  </aside>
+</div>
+
+<div class="wrap bottom">
+  <section class="card" id="about" style="padding:18px"><h3 data-i18n="aboutT"></h3><p data-i18n="aboutTxt" style="color:var(--mut);margin:8px 0 12px"></p><button class="btn amber sm inst" type="button" data-i18n="install">📲 አፑን ጫን</button></section>
+  <section class="card" id="map" style="padding:18px"><h3 data-i18n="mapT"></h3>
+    <iframe data-i18n-title="mapTitle" title="Map" loading="lazy" referrerpolicy="no-referrer" src="https://www.openstreetmap.org/export/embed.html?bbox=36.78%2C7.62%2C36.89%2C7.71&amp;layer=mapnik&amp;marker=7.6667%2C36.8333"></iframe>
+    <a href="https://www.openstreetmap.org/?mlat=7.6667&amp;mlon=36.8333#map=14/7.6667/36.8333" target="_blank" rel="noopener" data-i18n="bigMap"></a></section>
+</div>
+<footer><div class="wrap"><div class="soc" id="soc"></div><span data-i18n="rights"></span></div></footer>
+<dialog id="dlg" aria-labelledby="dt"></dialog>
+
+<script type="module">
+import { db, SECTORS, PHONE, EMAIL, esc, fmt, isOpen, safeUrl, safeLogo, toast, renderSocials } from "./firebase-config.js";
+import { t, trS, trT, trG, getLang, setLang, applyStatic, applyTheme, getTheme } from "./i18n.js";
+import { collection, query, where, onSnapshot, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+const KNOWN = SECTORS.filter(x => x !== "ሌላ");
+let jobs = [], ads = [], ai = 0, timer, secs = 8, first = true;
+
+// ምናሌ
+const dr = $("#drawer"), sc = $("#scrim"), mb = $("#menuBtn");
+function drawer(o){ dr.classList.toggle("on", o); sc.classList.toggle("on", o); mb.setAttribute("aria-expanded", o); dr.inert = !o; if(o) dr.querySelector("a").focus(); else mb.focus(); }
+mb.onclick = () => drawer(true); $("#dclose").onclick = () => drawer(false); sc.onclick = () => drawer(false);
+document.addEventListener("keydown", e => { if(e.key === "Escape" && dr.classList.contains("on")) drawer(false); });
+$$("#drawer .dnav a").forEach(a => a.addEventListener("click", () => { $$("#drawer .dnav a").forEach(x => x.classList.remove("act")); a.classList.add("act"); drawer(false); }));
+function sync(){ $$("#langBtn span").forEach(x => x.classList.toggle("on", x.dataset.lg === getLang())); $$("[data-l]").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === getLang())); $$("[data-th]").forEach(b => b.setAttribute("aria-pressed", b.dataset.th === getTheme())); const d = getTheme() === "dark"; $("#themeBtn").textContent = d ? "☀️" : "🌙"; $("#themeBtn").setAttribute("aria-label", t(d ? "light" : "dark")); }
+$("#langBtn").onclick = () => { setLang(getLang() === "am" ? "en" : "am"); relang(); };
+$("#themeBtn").onclick = () => { applyTheme(getTheme() === "dark" ? "light" : "dark"); sync(); };
+$$("[data-th]").forEach(b => b.onclick = () => { applyTheme(b.dataset.th); sync(); });
+$$("[data-l]").forEach(b => b.onclick = () => { setLang(b.dataset.l); relang(); });
+
+function buildSel(){ const v = $("#sec").value; $("#sec").innerHTML = `<option value="">${esc(t("allSec"))}</option>` + SECTORS.map(s => `<option value="${esc(s)}">${esc(trS(s))}</option>`).join(""); $("#sec").value = v; }
+function relang(){ applyStatic(); buildSel(); bellUI(); render(); showAd(); sync(); }
+
+// ጎብኚ ቆጠራ (አዲስ መሳሪያ ብቻ፣ አንድ ጊዜ)
+const seen = () => { try { if(localStorage.getItem("dev") === "1") return true; } catch {} return document.cookie.includes("jdev=1"); };
+const mark = on => { try { on ? localStorage.setItem("dev","1") : localStorage.removeItem("dev"); } catch {} document.cookie = "jdev=" + (on ? "1" : "") + ";max-age=" + (on ? 31536000 : 0) + ";path=/;SameSite=Lax"; };
+if(!seen()){ mark(true); setDoc(doc(db,"visits","total"),{count:increment(1)},{merge:true}).catch(() => mark(false)); }
+
+// ማስታወቂያ
+function showAd(){
+  const box = $("#adbox");
+  if(!ads.length){ box.hidden = true; box.innerHTML = ""; return; }
+  const a = ads[ai % ads.length], l = safeUrl(a.link), mu = safeUrl(a.mapUrl), img = safeLogo(a.logo) || safeUrl(a.imageUrl);
+  box.hidden = false;
+  box.innerHTML = `<div class="wrap"><div class="adin">${img?`<img src="${esc(img)}" alt="" loading="lazy">`:""}<div class="t"><small>${esc(t("ad"))} · ${esc(a.company||"")}</small><b>${esc(a.title)}</b><p>${esc(a.text||"")}</p></div>${mu?`<a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener" aria-label="${esc(t("viewMap"))}">📍</a>`:""}${l?`<a class="btn amber sm" href="${esc(l)}" target="_blank" rel="noopener sponsored">${esc(t("visit"))}</a>`:""}</div></div>`;
+}
+function startAds(){ clearInterval(timer); ai = 0; showAd(); if(ads.length > 1) timer = setInterval(() => { ai++; showAd(); }, secs*1000); }
+onSnapshot(query(collection(db,"ads"), where("status","==","approved")), s => { ads = s.docs.map(d => d.data()).sort((a,b) => (a.createdAt?.toMillis?.()||0) - (b.createdAt?.toMillis?.()||0)); startAds(); }, () => {});
+onSnapshot(doc(db,"settings","site"), s => { const d = s.data() || {}; const n = Math.max(3, +d.adSeconds || 8); if(n !== secs){ secs = n; startAds(); } renderSocials($("#soc"), d); }, () => {});
+
+// ማሳወቂያ
+const canNotify = "Notification" in window, bell = $("#bell");
+const bellOn = () => canNotify && Notification.permission === "granted" && localStorage.getItem("notify") === "1";
+function bellUI(){ bell.hidden = !canNotify; bell.textContent = bellOn() ? "🔔" : "🔕"; }
+bell.onclick = async () => { if(bellOn()) localStorage.setItem("notify","0"); else { const p = await Notification.requestPermission(); localStorage.setItem("notify", p==="granted"?"1":"0"); } bellUI(); };
+if("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
+async function notify(ti, b){ if(!bellOn()) return; try { const r = "serviceWorker" in navigator ? await navigator.serviceWorker.ready : null; r ? r.showNotification(ti,{body:b}) : new Notification(ti,{body:b}); } catch {} }
+const ms = j => j.createdAt?.toMillis?.() || 0;
+
+const qb = j => j.quantity ? `<span class="badge b-type">${esc(t("qty"))}: ${esc(j.quantity)}</span>` : "";
+function render(){
+  const q = $("#q").value.trim().toLowerCase(), sv = $("#sec").value;
+  const list = jobs.filter(j => !sv || (sv === "ሌላ" ? !KNOWN.includes(j.sector) : j.sector === sv))
+    .filter(j => !q || [j.title,j.company,j.location,j.sector,trS(j.sector)].join(" ").toLowerCase().includes(q))
+    .sort((a,b) => (isOpen(b)?1:0) - (isOpen(a)?1:0) || (b.vip?1:0) - (a.vip?1:0) || ms(b) - ms(a));
+  $("#count").textContent = t("count", list.filter(isOpen).length);
+  $("#jobs").innerHTML = list.length ? list.map(j => { const o = isOpen(j); return `<article class="card job${o?"":" closed"}"><div class="av" aria-hidden="true">${esc((j.company||"?")[0])}</div><div><h3>${esc(j.title)}</h3><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span><span>⏳ ${esc(t(o?"closes":"closedOn"))} ${fmt(j.deadline)}</span>${j.phone?`<span>📞 ${esc(j.phone)}</span>`:""}</div><div class="tags">${j.vip&&o?`<span class="badge b-vip">${esc(t("feat"))}</span>`:""}<span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}${j.salary?`<span class="badge b-sal">${esc(j.salary)}</span>`:""}<span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="btn vbtn" data-id="${j.id}">${esc(t("view"))}</button></article>`; }).join("")
+    : `<div class="card empty">${esc(t("none"))}</div>`;
+}
+
+$("#jobs").onclick = e => {
+  const b = e.target.closest("[data-id]"); if(!b) return;
+  const j = jobs.find(x => x.id === b.dataset.id), d = $("#dlg"), o = isOpen(j), mu = safeUrl(j.mapUrl), ap = (j.apply||"").trim(), u = safeUrl(ap);
+  const how = !o ? esc(t("closedNote")) : u ? `<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">${esc(t("applyOnline"))}</a>` : ap ? esc(ap) : esc(t("callUs", PHONE, EMAIL));
+  const tel = o && j.phone ? `<br>📞 <a href="tel:${esc(String(j.phone).replace(/[^\d+]/g,""))}">${esc(j.phone)}</a>` : "";
+  const info = [j.gender ? `<b>${esc(t("gender"))}:</b> ${esc(trG(j.gender))}` : "", j.address ? `<b>${esc(t("address"))}:</b> ${esc(j.address)}` : ""].filter(Boolean).join(" · ");
+  d.innerHTML = `<div class="dh"><div><h2 id="dt">${esc(j.title)}</h2><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span></div><div class="tags"><span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}<span class="badge b-sal">${esc(j.salary||t("nosal"))}</span><span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="x" aria-label="${esc(t("close"))}" id="cx">×</button></div><div class="db"><p style="margin-top:0"><b>${esc(t("deadline"))}:</b> ${fmt(j.deadline)} · <b>${esc(t("sector"))}:</b> ${esc(trS(j.sector))}${info?`<br>${info}`:""}</p>${mu?`<p style="margin:0 0 10px"><a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener">${esc(t("viewMap"))}</a></p>`:""}<div>${esc(j.desc)}</div>${j.requirements?`<h3 style="font-size:16px;margin:14px 0 4px">${esc(t("req"))}</h3><div>${esc(j.requirements)}</div>`:""}<div class="note"><b>${esc(t("how"))}</b><br>${how}${tel}</div></div>`;
+  d.showModal(); $("#cx").onclick = () => d.close();
+};
+$("#dlg").addEventListener("click", e => { if(e.target.id==="dlg") e.target.close(); });
+$("#q").addEventListener("input", render); $("#sec").addEventListener("change", render);
+
+// አፑን መጫን
+let dp = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); dp = e; });
+addEventListener("appinstalled", () => { dp = null; $$(".inst").forEach(b => b.hidden = true); });
+if(matchMedia("(display-mode: standalone)").matches || navigator.standalone) $$(".inst").forEach(b => b.hidden = true);
+$$(".inst").forEach(b => b.onclick = async () => { if(dp){ dp.prompt(); await dp.userChoice; dp = null; } else alert(t("installHint")); });
+
+applyStatic(); buildSel(); bellUI(); sync();
+onSnapshot(query(collection(db,"jobs"), where("status","==","published")),
+  snap => {
+    jobs = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    const seen = Number(localStorage.getItem("lastSeen")) || 0, fresh = jobs.filter(j => isOpen(j) && ms(j) > seen);
+    if(seen && fresh.length && (first || snap.docChanges().some(c => c.type === "added"))) notify(fresh.length === 1 ? t("newJob") : t("newJobs", fresh.length), fresh.slice(0,3).map(j => j.title).join(", "));
+    localStorage.setItem("lastSeen", String(Math.max(seen, ...jobs.map(ms), 0) || Date.now()));
+    first = false; render();
+  },
+  err => { console.error(err); $("#jobs").innerHTML = `<div class="card empty">${esc(t("err"))}</div>`; });
+</script>
+</body>
+</html>
