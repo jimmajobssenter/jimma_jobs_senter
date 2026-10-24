@@ -46,7 +46,8 @@
     <div class="lbl full"><span>ሎኬሽን (የካርታ ሊንክ፣ አማራጭ)</span><div class="geo"><input name="mapUrl" type="url" placeholder="https://maps.google.com/…" maxlength="290"><button class="btn ghost sm" type="button" data-geo>📍 የአሁኑን ቦታ ተጠቀም</button></div></div>
     <label class="full">የማመልከቻ መንገድ (ሊንክ ወይም ጽሁፍ)<input name="apply" placeholder="https://… ወይም «በስልክ 09… ይደውሉ»"></label>
     <label class="full">መግለጫ<textarea name="desc" rows="4" required></textarea></label>
-    <div class="full acts"><button class="btn" type="submit" value="published">ሥራውን አትም</button><button class="btn ghost" type="submit" value="draft">በመጠባበቅ ላይ አስቀምጥ</button></div>
+    <label class="full">ፎቶ / ፖስተር (አማራጭ)<input type="file" name="photo" accept="image/*"></label>
+    <div class="full acts"><button class="btn" type="submit" value="published">ሥራውን አትም</button><button class="btn amber" type="submit" value="published" data-more="1">አትም እና ሌላ ሥራ ጨምር</button><button class="btn ghost" type="submit" value="draft">በመጠባበቅ ላይ አስቀምጥ</button></div>
   </form>
   <div class="card tbl" style="margin-bottom:28px"><table><thead><tr><th>ሥራ</th><th>ድርጅት</th><th>የመጨረሻ ቀን</th><th>ሁኔታ</th><th>እርምጃዎች</th></tr></thead><tbody id="rows"></tbody></table></div>
 
@@ -76,7 +77,7 @@
 </main>
 
 <script type="module">
-import { db, auth, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, typeValue, bindGeo, esc, fmt, isOpen, safeUrl, safeLogo, videoInfo, fileToLogo, today, toast } from "./firebase-config.js";
+import { db, auth, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, typeValue, bindGeo, esc, fmt, isOpen, safeUrl, safeLogo, videoInfo, fileToLogo, fileToPhoto, today, toast } from "./firebase-config.js";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $ = s => document.querySelector(s);
@@ -123,7 +124,7 @@ function draw(){
   
   $("#stats").innerHTML = [[open,"ጠቅላላ ንቁ ሥራዎች","var(--open)"],[pub.length-open,"ያለፈባቸው ሥራዎች","var(--red)"],[ads.filter(a => a.status==="pending").length,"በመጠባበቅ ላይ ያሉ ማስታወቂያዎች","var(--info)"],[pj,"ከድርጅቶች የመጡ ሥራዎች (ይጸድቁ)","var(--info)"],[visits.total||0,"ጠቅላላ ጎብኚዎች (አዲስ መሳሪያ)","var(--am)"],[Object.values(adviews).reduce((p,q) => p+q, 0),"ጠቅላላ የማስታወቂያ እይታ (አዲስ መሳሪያ)","var(--am)"]]
     .map(s => `<div class="card stat" style="border-left:4px solid ${s[2]}"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("");
-  $("#rows").innerHTML = jobs.length ? jobs.map(j => { const [t,c] = st(j); return `<tr><td><b>${esc(j.title)}</b>${j.vip?' <span class="badge b-vip">VIP</span>':""}</td><td>${esc(j.company)}${j.phone?`<br><small>📞 ${esc(j.phone)}</small>`:""}</td><td>${fmt(j.deadline,"am")}</td><td><span class="badge ${c}">${t}</span></td><td class="acts">${["draft","pending"].includes(j.status)?`<button class="btn sm" data-a="pub" data-id="${j.id}">${j.status==="pending"?"አጽድቅ":"አትም"}</button>`:`<button class="btn ghost sm" data-a="tog" data-id="${j.id}">${j.active?"ዝጋ":"እንደገና ክፈት"}</button>`}<button class="btn danger sm" data-a="del" data-id="${j.id}">ሰርዝ</button></td></tr>`; }).join("")
+  $("#rows").innerHTML = jobs.length ? jobs.map(j => { const [t,c] = st(j); return `<tr><td><b>${esc(j.title)}</b>${j.photo?" 🖼":""}${j.vip?' <span class="badge b-vip">VIP</span>':""}</td><td>${esc(j.company)}${j.phone?`<br><small>📞 ${esc(j.phone)}</small>`:""}</td><td>${fmt(j.deadline,"am")}</td><td><span class="badge ${c}">${t}</span></td><td class="acts">${["draft","pending"].includes(j.status)?`<button class="btn sm" data-a="pub" data-id="${j.id}">${j.status==="pending"?"አጽድቅ":"አትም"}</button>`:`<button class="btn ghost sm" data-a="tog" data-id="${j.id}">${j.active?"ዝጋ":"እንደገና ክፈት"}</button>`}<button class="btn danger sm" data-a="del" data-id="${j.id}">ሰርዝ</button></td></tr>`; }).join("")
     : '<tr><td colspan="5" class="empty">እስካሁን ሥራ የለም።</td></tr>';
   const S = {pending:["በመጠባበቅ ላይ","b-vip"],approved:["ይታያል","b-open"],hidden:["የተደበቀ","b-closed"]};
   $("#adrows").innerHTML = ads.length ? ads.map(a => { const [t,c] = S[a.status] || S.hidden, l = safeUrl(a.link); return `<tr><td>${safeLogo(a.logo)?`<img src="${esc(safeLogo(a.logo))}" alt="" width="36" height="36" style="float:left;margin-right:8px;object-fit:contain;border:1px solid var(--bd);border-radius:8px;background:#fff">`:""}<b>${esc(a.title)}</b>${videoInfo(a.videoUrl)?" 🎬":""}<br><small style="color:var(--mut)">${esc(a.text||"")}</small>${l?`<br><a href="${esc(l)}" target="_blank" rel="noopener" style="font-size:13px">${esc(l)}</a>`:""}</td><td>${esc(a.company)}${a.phone?`<br><small>📞 ${esc(a.phone)}</small>`:""}</td><td><span class="badge ${c}">${t}</span></td><td><b>${adviews[a.id]||0}</b></td><td class="acts">${a.status==="approved"?`<button class="btn ghost sm" data-aa="hide" data-id="${a.id}">ደብቅ</button>`:`<button class="btn sm" data-aa="ok" data-id="${a.id}">${a.status==="pending"?"አጽድቅ":"አሳይ"}</button>`}<button class="btn danger sm" data-aa="del" data-id="${a.id}">ሰርዝ</button></td></tr>`; }).join("")
@@ -140,9 +141,13 @@ $("#adrows").onclick = e => { const b = e.target.closest("[data-aa]"); if(!b) re
     if(k==="del"){ if(confirm("ይህን ማስታወቂያ ይሰርዙ?")){ await deleteDoc(r); toast("ተሰርዟል"); } }
     else { await updateDoc(r,{status: k==="ok"?"approved":"hidden"}); toast(k==="ok"?"ማስታወቂያው ይታያል":"ማስታወቂያው ተደብቋል"); } }); };
 
-$("#form").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)), status = e.submitter?.value || "published"; if(f.mapUrl && !safeUrl(f.mapUrl)) return toast("የካርታ ሊንኩ በ https:// መጀመር አለበት");
-  run(async () => { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:typeValue(f), salary:f.salary, location:f.location, deadline:f.deadline, apply:f.apply||"", mapUrl:f.mapUrl||"", quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone||"", requirements:f.requirements||"", gender:f.gender, address:f.address||"", vip:!!f.vip, active:true, desc:f.desc, status, createdAt:serverTimestamp() });
-    e.target.reset(); ep.clear(); e.target.location.value = "ጅማ"; toast(status==="draft" ? "በመጠባበቅ ላይ ተቀምጧል" : "ሥራው ታትሟል"); }); };
+$("#form").onsubmit = e => { e.preventDefault(); const form = e.target, more = e.submitter?.dataset.more === "1", f = Object.fromEntries(new FormData(form)), status = e.submitter?.value || "published"; if(f.mapUrl && !safeUrl(f.mapUrl)) return toast("የካርታ ሊንኩ በ https:// መጀመር አለበት");
+  run(async () => {
+    let photo = ""; const file = form.photo.files[0]; if(file){ try { photo = await fileToPhoto(file); } catch { return toast("ፎቶውን ማስገባት አልተቻለም፤ ሌላ ምስል ይሞክሩ"); } }
+    await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:typeValue(f), salary:f.salary, location:f.location, deadline:f.deadline, apply:f.apply||"", mapUrl:f.mapUrl||"", photo, quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone||"", requirements:f.requirements||"", gender:f.gender, address:f.address||"", vip:!!f.vip, active:true, desc:f.desc, status, createdAt:serverTimestamp() });
+    if(more){ ["title","salary","requirements","desc","apply"].forEach(n => form[n].value = ""); form.quantity.value = 1; form.photo.value = ""; form.vip.checked = false; ep.clear(); form.title.focus(); }
+    else { form.reset(); ep.clear(); form.location.value = "ጅማ"; }
+    toast(status==="draft" ? "በመጠባበቅ ላይ ተቀምጧል" : more ? "ሥራው ታትሟል — ቀጣዩን ይሙሉ" : "ሥራው ታትሟል"); }); };
 $("#adform").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
   if((f.link && !safeUrl(f.link)) || (f.mapUrl && !safeUrl(f.mapUrl))) return toast("ሊንኩ በ https:// መጀመር አለበት");
   if(f.videoUrl && !videoInfo(f.videoUrl)) return toast("የቪዲዮ ሊንኩ YouTube ወይም .mp4/.webm መሆን አለበት");
