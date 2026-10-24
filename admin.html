@@ -33,7 +33,7 @@
     <label>የሥራ ርዕስ<input name="title" required></label>
     <label>የድርጅት ስም<input name="company" required></label>
     <label>ዘርፍ<select name="sector" id="sector"></select><input name="sectorOther" id="sectorOther" hidden maxlength="60" placeholder="ዘርፉን ይጻፉ"></label>
-    <label>የቅጥር ዓይነት<select name="type" id="type"></select></label>
+    <label>የቅጥር ዓይነት<select name="type" id="type"></select><input name="typeOther" id="typeOther" hidden maxlength="35" placeholder="የቅጥር ዓይነቱን ይጻፉ"></label>
     <label>ደመወዝ<input name="salary" placeholder="ለምሳሌ፦ 8,000 ብር በወር"></label>
     <label>ቦታ<input name="location" value="ጅማ" required></label>
     <div class="lbl"><span>የመጨረሻ ቀን (ዓ.ም)</span><div id="ethp"></div></div>
@@ -76,7 +76,7 @@
 </main>
 
 <script type="module">
-import { db, auth, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, bindGeo, esc, fmt, isOpen, safeUrl, safeLogo, videoInfo, fileToLogo, today, toast } from "./firebase-config.js";
+import { db, auth, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, typeValue, bindGeo, esc, fmt, isOpen, safeUrl, safeLogo, videoInfo, fileToLogo, today, toast } from "./firebase-config.js";
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $ = s => document.querySelector(s);
@@ -89,6 +89,7 @@ bindGeo($("#form [data-geo]"), $("#form").elements.mapUrl, GEOERR);
 bindGeo($("#adform [data-geo]"), $("#adform").elements.mapUrl, GEOERR);
 $("#gender").innerHTML = GENDERS.map(s => `<option>${esc(s)}</option>`).join("");
 $("#type").innerHTML = TYPES.map(s => `<option>${esc(s)}</option>`).join("");
+bindOther($("#type"), $("#typeOther"));
 $("#advlink").value = new URL("advertise.html", location.href).href;
 $("#copy").onclick = () => navigator.clipboard.writeText($("#advlink").value).then(() => toast("ተቀድቷል"));
 
@@ -140,7 +141,7 @@ $("#adrows").onclick = e => { const b = e.target.closest("[data-aa]"); if(!b) re
     else { await updateDoc(r,{status: k==="ok"?"approved":"hidden"}); toast(k==="ok"?"ማስታወቂያው ይታያል":"ማስታወቂያው ተደብቋል"); } }); };
 
 $("#form").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target)), status = e.submitter?.value || "published"; if(f.mapUrl && !safeUrl(f.mapUrl)) return toast("የካርታ ሊንኩ በ https:// መጀመር አለበት");
-  run(async () => { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:f.type, salary:f.salary, location:f.location, deadline:f.deadline, apply:f.apply||"", mapUrl:f.mapUrl||"", quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone||"", requirements:f.requirements||"", gender:f.gender, address:f.address||"", vip:!!f.vip, active:true, desc:f.desc, status, createdAt:serverTimestamp() });
+  run(async () => { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:typeValue(f), salary:f.salary, location:f.location, deadline:f.deadline, apply:f.apply||"", mapUrl:f.mapUrl||"", quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone||"", requirements:f.requirements||"", gender:f.gender, address:f.address||"", vip:!!f.vip, active:true, desc:f.desc, status, createdAt:serverTimestamp() });
     e.target.reset(); ep.clear(); e.target.location.value = "ጅማ"; toast(status==="draft" ? "በመጠባበቅ ላይ ተቀምጧል" : "ሥራው ታትሟል"); }); };
 $("#adform").onsubmit = e => { e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
   if((f.link && !safeUrl(f.link)) || (f.mapUrl && !safeUrl(f.mapUrl))) return toast("ሊንኩ በ https:// መጀመር አለበት");
