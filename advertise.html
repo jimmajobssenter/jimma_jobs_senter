@@ -47,7 +47,7 @@
   <p style="color:var(--mut);margin:0" data-i18n="jobSub"></p>
   <label><span data-i18n="jTitle"></span><input name="title" required maxlength="100"></label>
   <label><span data-i18n="company"></span><input name="company" required maxlength="100"></label>
-  <div class="row2"><label><span data-i18n="sector"></span><select name="sector"></select><input name="sectorOther" hidden maxlength="60" data-i18n-ph="otherPh"></label><label><span data-i18n="jType"></span><select name="type"></select></label></div>
+  <div class="row2"><label><span data-i18n="sector"></span><select name="sector"></select><input name="sectorOther" hidden maxlength="60" data-i18n-ph="otherPh"></label><label><span data-i18n="jType"></span><select name="type"></select><input name="typeOther" hidden maxlength="35" data-i18n-ph="otherTypePh"></label></div>
   <div class="row2"><label><span data-i18n="jSalary"></span><input name="salary" maxlength="70"></label><label><span data-i18n="jLocation"></span><input name="location" value="ጅማ" required maxlength="90"></label></div>
   <label><span data-i18n="address"></span><input name="address" maxlength="140"></label>
   <div class="lbl"><span data-i18n="mapLbl"></span><div class="geo"><input name="mapUrl" type="url" placeholder="https://maps.google.com/…" maxlength="290"><button class="btn ghost sm" type="button" data-geo data-i18n="geoBtn"></button></div></div>
@@ -62,7 +62,7 @@
 </form>
 </main>
 <script type="module">
-import { db, esc, today, safeUrl, videoInfo, fileToLogo, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, bindGeo } from "./firebase-config.js";
+import { db, esc, today, safeUrl, videoInfo, fileToLogo, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, typeValue, bindGeo } from "./firebase-config.js";
 import { t, trS, trT, trG, getLang, setLang, applyStatic } from "./i18n.js";
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $ = s => document.querySelector(s);
@@ -71,9 +71,9 @@ const jf = $("#jf"), af = $("#f"), E = jf.elements; let ep;
 const say = (el, k, ok) => { el.style.color = ok ? "var(--em-h)" : "var(--red)"; el.textContent = t(k); el.hidden = false; };
 function fill(){ const keep = ["sector","type","gender"].map(n => E[n].value);
   E.sector.innerHTML = opt(SECTORS, trS); E.type.innerHTML = opt(TYPES, trT); E.gender.innerHTML = opt(GENDERS, trG);
-  ["sector","type","gender"].forEach((n,i) => { if(keep[i]) E[n].value = keep[i]; }); E.sector.dispatchEvent(new Event("change")); }
+  ["sector","type","gender"].forEach((n,i) => { if(keep[i]) E[n].value = keep[i]; }); E.sector.dispatchEvent(new Event("change")); E.type.dispatchEvent(new Event("change")); }
 const pill = () => document.querySelectorAll("#langBtn span").forEach(x => x.classList.toggle("on", x.dataset.lg === getLang()));
-bindOther(E.sector, E.sectorOther);
+bindOther(E.sector, E.sectorOther); bindOther(E.type, E.typeOther);
 bindGeo(af.querySelector("[data-geo]"), af.elements.mapUrl, () => t("geoErr"));
 bindGeo(jf.querySelector("[data-geo]"), jf.elements.mapUrl, () => t("geoErr"));
 function relang(){ applyStatic(); fill(); ep = ethPicker($("#ethp"), getLang(), today()); pill(); }
@@ -95,7 +95,7 @@ af.onsubmit = async e => {
 
 jf.onsubmit = async e => {
   e.preventDefault(); const m = $("#jmsg"); m.hidden = true; const f = Object.fromEntries(new FormData(jf)); if(f.mapUrl && !safeUrl(f.mapUrl)) return say(m, "badLink");
-  try { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:f.type, salary:f.salary||"", location:f.location, address:f.address||"", deadline:f.deadline, gender:f.gender, requirements:f.requirements||"", desc:f.desc, apply:f.apply||"", mapUrl:f.mapUrl||"", quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone, active:true, status:"pending", createdAt:serverTimestamp() }); jf.reset(); ep.clear(); say(m, "jOk", true); }
+  try { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:typeValue(f), salary:f.salary||"", location:f.location, address:f.address||"", deadline:f.deadline, gender:f.gender, requirements:f.requirements||"", desc:f.desc, apply:f.apply||"", mapUrl:f.mapUrl||"", quantity:Math.max(1, Math.floor(+f.quantity || 1)), phone:f.phone, active:true, status:"pending", createdAt:serverTimestamp() }); jf.reset(); ep.clear(); say(m, "jOk", true); }
   catch(err){ console.error(err); say(m, "failMsg"); }
 };
 </script>
