@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build site folder
+        run: |
+          mkdir dist
+          cp index.html admin.html advertise.html styles.css firebase-config.js i18n.js sw.js manifest.json icon-192.png icon-512.png icon-180.png icon-maskable-512.png favicon.png og-image.jpg hero.jpg dist/
+          OWNER="${{ github.repository_owner }}"; REPO="${{ github.event.repository.name }}"
+          OWNER_L=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]'); REPO_L=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+          if [ -n "${{ vars.SITE_URL }}" ]; then URL="${{ vars.SITE_URL }}"
+          elif [ "$REPO_L" = "$OWNER_L.github.io" ]; then URL="https://$OWNER_L.github.io"
+          else URL="https://$OWNER_L.github.io/$REPO"; fi
+          URL="${URL%/}"
+          echo "Site URL: $URL"
+          sed -i "s#https://USERNAME.github.io/REPO-NAME#${URL}#g" dist/index.html dist/advertise.html
+          if grep -q "USERNAME" dist/index.html dist/advertise.html; then echo "placeholder still present"; exit 1; fi
+          grep -o 'og:image" content="[^"]*"' dist/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
