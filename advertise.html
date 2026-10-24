@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ማስታወቂያ ያስገቡ</title>
+<script>document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#064E3B">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="grad"><div class="wrap"><nav><a class="logo" href="./"><i aria-hidden="true">💼</i><span data-i18n="title"></span></a><button class="lpill" id="langBtn" type="button" aria-label="Language"><span data-lg="am">አማ</span><span data-lg="en">EN</span></button><a class="l" href="./" data-i18n="back"></a></nav></div></header>
+<main class="wrap">
+<div class="seg" id="tabs" style="max-width:560px;margin:24px auto 0"><button type="button" data-tab="job" aria-pressed="true" data-i18n="tabJob"></button><button type="button" data-tab="ad" aria-pressed="false" data-i18n="tabAd"></button></div>
+
+<form class="card form simple" id="f" hidden style="display:grid;grid-template-columns:1fr">
+  <h1 style="font-size:24px" data-i18n="advT"></h1>
+  <p style="color:var(--mut);margin:0" data-i18n="advSub"></p>
+  <label><span data-i18n="company"></span><input name="company" required maxlength="100"></label>
+  <label><span data-i18n="adTitle"></span><input name="title" required maxlength="100"></label>
+  <label><span data-i18n="adText"></span><textarea name="text" rows="3" required maxlength="350"></textarea></label>
+  <label><span data-i18n="adLink"></span><input type="url" name="link" placeholder="https://" maxlength="300"></label>
+  <label><span data-i18n="logo"></span><input type="file" name="logo" accept="image/*"></label>
+  <div class="lbl"><span data-i18n="mapLbl"></span><div class="geo"><input name="mapUrl" type="url" placeholder="https://maps.google.com/…" maxlength="290"><button class="btn ghost sm" type="button" data-geo data-i18n="geoBtn"></button></div></div>
+  <label><span data-i18n="phone"></span><input type="tel" name="phone" required maxlength="20"></label>
+  <p class="err" id="msg" hidden></p>
+  <button class="btn amber" type="submit" data-i18n="send"></button>
+</form>
+
+<form class="card form simple" id="jf" style="display:grid;grid-template-columns:1fr">
+  <h1 style="font-size:24px" data-i18n="jobH"></h1>
+  <p style="color:var(--mut);margin:0" data-i18n="jobSub"></p>
+  <label><span data-i18n="jTitle"></span><input name="title" required maxlength="100"></label>
+  <label><span data-i18n="company"></span><input name="company" required maxlength="100"></label>
+  <div class="row2"><label><span data-i18n="sector"></span><select name="sector"></select><input name="sectorOther" hidden maxlength="60" data-i18n-ph="otherPh"></label><label><span data-i18n="jType"></span><select name="type"></select></label></div>
+  <div class="row2"><label><span data-i18n="jSalary"></span><input name="salary" maxlength="70"></label><label><span data-i18n="jLocation"></span><input name="location" value="ጅማ" required maxlength="90"></label></div>
+  <label><span data-i18n="address"></span><input name="address" maxlength="140"></label>
+  <div class="lbl"><span data-i18n="mapLbl"></span><div class="geo"><input name="mapUrl" type="url" placeholder="https://maps.google.com/…" maxlength="290"><button class="btn ghost sm" type="button" data-geo data-i18n="geoBtn"></button></div></div>
+  <div class="row2"><div class="lbl"><span data-i18n="jDeadline"></span><div id="ethp"></div></div><label><span data-i18n="gender"></span><select name="gender"></select></label></div>
+  <label><span data-i18n="req"></span><textarea name="requirements" rows="3" maxlength="900"></textarea></label>
+  <label><span data-i18n="jDesc"></span><textarea name="desc" rows="4" required maxlength="1900"></textarea></label>
+  <label><span data-i18n="jApply"></span><input name="apply" maxlength="280"></label>
+  <label><span data-i18n="phone"></span><input type="tel" name="phone" required maxlength="20"></label>
+  <p class="err" id="jmsg" hidden></p>
+  <button class="btn" type="submit" data-i18n="jSend"></button>
+</form>
+</main>
+<script type="module">
+import { db, esc, today, safeUrl, fileToLogo, SECTORS, TYPES, GENDERS, ethPicker, bindOther, sectorValue, bindGeo } from "./firebase-config.js";
+import { t, trS, trT, trG, getLang, setLang, applyStatic } from "./i18n.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const $ = s => document.querySelector(s);
+const opt = (a, tr) => a.map(v => `<option value="${esc(v)}">${esc(tr(v))}</option>`).join("");
+const jf = $("#jf"), af = $("#f"), E = jf.elements; let ep;
+const say = (el, k, ok) => { el.style.color = ok ? "var(--em-h)" : "var(--red)"; el.textContent = t(k); el.hidden = false; };
+function fill(){ const keep = ["sector","type","gender"].map(n => E[n].value);
+  E.sector.innerHTML = opt(SECTORS, trS); E.type.innerHTML = opt(TYPES, trT); E.gender.innerHTML = opt(GENDERS, trG);
+  ["sector","type","gender"].forEach((n,i) => { if(keep[i]) E[n].value = keep[i]; }); E.sector.dispatchEvent(new Event("change")); }
+const pill = () => document.querySelectorAll("#langBtn span").forEach(x => x.classList.toggle("on", x.dataset.lg === getLang()));
+bindOther(E.sector, E.sectorOther);
+bindGeo(af.querySelector("[data-geo]"), af.elements.mapUrl, () => t("geoErr"));
+bindGeo(jf.querySelector("[data-geo]"), jf.elements.mapUrl, () => t("geoErr"));
+function relang(){ applyStatic(); fill(); ep = ethPicker($("#ethp"), getLang(), today()); pill(); }
+$("#langBtn").onclick = () => { setLang(getLang() === "am" ? "en" : "am"); relang(); };
+relang();
+
+function tab(n){ af.hidden = n !== "ad"; jf.hidden = n !== "job"; document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tab === n)); }
+document.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => tab(b.dataset.tab));
+tab(location.hash === "#ad" ? "ad" : "job");
+
+af.onsubmit = async e => {
+  e.preventDefault(); const m = $("#msg"); m.hidden = true; const f = Object.fromEntries(new FormData(af)), file = af.elements.logo.files[0];
+  if((f.link && !safeUrl(f.link)) || (f.mapUrl && !safeUrl(f.mapUrl))) return say(m, "badLink");
+  let logo = ""; if(file){ try { logo = await fileToLogo(file); } catch { return say(m, "logoErr"); } }
+  try { await addDoc(collection(db,"ads"), { company:f.company, title:f.title, text:f.text, link:f.link||"", mapUrl:f.mapUrl||"", logo, phone:f.phone, status:"pending", createdAt:serverTimestamp() }); af.reset(); say(m, "okMsg", true); }
+  catch(err){ console.error(err); say(m, "failMsg"); }
+};
+
+jf.onsubmit = async e => {
+  e.preventDefault(); const m = $("#jmsg"); m.hidden = true; const f = Object.fromEntries(new FormData(jf)); if(f.mapUrl && !safeUrl(f.mapUrl)) return say(m, "badLink");
+  try { await addDoc(collection(db,"jobs"), { title:f.title, company:f.company, sector:sectorValue(f), type:f.type, salary:f.salary||"", location:f.location, address:f.address||"", deadline:f.deadline, gender:f.gender, requirements:f.requirements||"", desc:f.desc, apply:f.apply||"", mapUrl:f.mapUrl||"", phone:f.phone, active:true, status:"pending", createdAt:serverTimestamp() }); jf.reset(); ep.clear(); say(m, "jOk", true); }
+  catch(err){ console.error(err); say(m, "failMsg"); }
+};
+</script>
+</body>
+</html>
