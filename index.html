@@ -64,7 +64,7 @@
   </div>
 </aside>
 
-<div class="adstrip" id="adbox" hidden aria-live="polite"></div>
+<div class="adstrip" id="adbox" aria-live="polite"></div>
 
 <section class="grad hero" id="top"><div class="wrap">
   <h1><span class="en">Find work in Jimma</span><span class="am">በጅማ ሥራ ያግኙ</span><span class="bar" aria-hidden="true"></span></h1>
@@ -109,7 +109,7 @@ $$("[data-th]").forEach(b => b.onclick = () => { applyTheme(b.dataset.th); sync(
 $$("[data-l]").forEach(b => b.onclick = () => { setLang(b.dataset.l); relang(); });
 
 function buildSel(){ const v = $("#sec").value; $("#sec").innerHTML = `<option value="">${esc(t("allSec"))}</option>` + SECTORS.map(s => `<option value="${esc(s)}">${esc(trS(s))}</option>`).join(""); $("#sec").value = v; }
-function relang(){ applyStatic(); buildSel(); bellUI(); render(); showAd(); sync(); }
+function relang(){ applyStatic(); buildSel(); bellUI(); render(); if(adOn) showAd(); sync(); }
 
 // ጎብኚ ቆጠራ (አዲስ መሳሪያ ብቻ፣ አንድ ጊዜ)
 const seen = () => { try { if(localStorage.getItem("dev") === "1") return true; } catch {} return document.cookie.includes("jdev=1"); };
@@ -124,14 +124,13 @@ function countAd(id){ if(!id || adSeen(id)) return; adMark(id, true); setDoc(doc
 
 function showAd(){
   const box = $("#adbox");
-  if(!ads.length){ box.hidden = true; box.innerHTML = ""; return; }
+  if(!ads.length){ hideAd(); return; }
   const a = ads[ai % ads.length], l = safeUrl(a.link), mu = safeUrl(a.mapUrl), img = safeLogo(a.logo) || safeUrl(a.imageUrl), v = videoInfo(a.videoUrl);
   let media = "";
   if(v && v.yt) media = `<div class="adm v" data-yt="${esc(v.yt)}"><iframe src="https://www.youtube-nocookie.com/embed/${esc(v.yt)}?autoplay=1&mute=1&loop=1&playlist=${esc(v.yt)}&playsinline=1&controls=0&modestbranding=1" allow="autoplay; encrypted-media" tabindex="-1" title=""></iframe></div>`;
   else if(v && v.src) media = `<div class="adm v" data-src="${esc(v.src)}"><video src="${esc(v.src)}" autoplay muted loop playsinline preload="metadata"></video></div>`;
   else if(img) media = `<div class="adm"><img src="${esc(img)}" alt="" loading="lazy"></div>`;
-  box.hidden = false;
-  box.innerHTML = `<div class="wrap"><div class="adin">${media}<div class="t"><small>${esc(t("ad"))} · ${esc(a.company||"")}</small><b>${esc(a.title)}</b><p>${esc(a.text||"")}</p></div>${mu?`<a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener" aria-label="${esc(t("viewMap"))}">📍</a>`:""}${l?`<a class="btn amber sm" href="${esc(l)}" target="_blank" rel="noopener sponsored">${esc(t("visit"))}</a>`:""}</div></div>`;
+  box.innerHTML = `<button class="adx" type="button" aria-label="×">×</button><div class="wrap"><div class="adin">${media}<div class="t"><small>${esc(t("ad"))} · ${esc(a.company||"")}</small><b>${esc(a.title)}</b><p>${esc(a.text||"")}</p></div>${mu?`<a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener" aria-label="${esc(t("viewMap"))}">📍</a>`:""}${l?`<a class="btn amber sm" href="${esc(l)}" target="_blank" rel="noopener sponsored">${esc(t("visit"))}</a>`:""}</div></div>`;
   countAd(a.id);
 }
 // ቪዲዮውን ትልቅ አድርጎ ማሳያ
@@ -141,7 +140,12 @@ vd.querySelector(".x").onclick = vclose; vd.addEventListener("click", e => { if(
 $("#adbox").addEventListener("click", e => { const m = e.target.closest(".adm.v"); if(!m) return; const p = vd.querySelector(".vp");
   p.innerHTML = m.dataset.yt ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(m.dataset.yt)}?autoplay=1&playsinline=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen title=""></iframe>` : `<video src="${esc(m.dataset.src)}" controls autoplay playsinline></video>`;
   vd.showModal(); });
-function startAds(){ clearInterval(timer); ai = 0; showAd(); if(ads.length > 1) timer = setInterval(() => { ai++; showAd(); }, secs*1000); }
+const abox = $("#adbox"); let adOn = false, adT;
+function hideAd(){ adOn = false; abox.classList.remove("on"); setTimeout(() => { if(!adOn) abox.innerHTML = ""; }, 700); }
+function adLoop(firstRun){ clearTimeout(adT); if(!ads.length){ hideAd(); return; }
+  adT = setTimeout(() => { showAd(); adOn = true; abox.classList.add("on"); adT = setTimeout(() => { hideAd(); ai++; adLoop(false); }, Math.max(6, secs) * 1000); }, firstRun ? 3000 : 12000); }
+function startAds(){ ai = 0; hideAd(); adLoop(true); }
+abox.addEventListener("click", e => { if(e.target.closest(".adx")){ hideAd(); clearTimeout(adT); ai++; adLoop(false); } });
 onSnapshot(query(collection(db,"ads"), where("status","==","approved")), s => { ads = s.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.createdAt?.toMillis?.()||0) - (b.createdAt?.toMillis?.()||0)); startAds(); }, () => {});
 onSnapshot(doc(db,"settings","site"), s => { const d = s.data() || {}; const n = Math.max(3, +d.adSeconds || 8); if(n !== secs){ secs = n; startAds(); } renderSocials($("#soc"), d); }, () => {});
 
@@ -161,8 +165,14 @@ function render(){
     .filter(j => !q || [j.title,j.company,j.location,j.sector,trS(j.sector)].join(" ").toLowerCase().includes(q))
     .sort((a,b) => (isOpen(b)?1:0) - (isOpen(a)?1:0) || (b.vip?1:0) - (a.vip?1:0) || ms(b) - ms(a));
   $("#count").textContent = t("count", list.filter(isOpen).length);
-  $("#jobs").innerHTML = list.length ? list.map(j => { const o = isOpen(j); return `<article class="card job${o?"":" closed"}"><div class="av" aria-hidden="true">${esc((j.company||"?")[0])}</div><div><h3>${esc(j.title)}</h3><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span><span>⏳ ${esc(t(o?"closes":"closedOn"))} ${fmt(j.deadline)}</span>${j.phone?`<span>📞 ${esc(j.phone)}</span>`:""}</div><div class="tags">${j.vip&&o?`<span class="badge b-vip">${esc(t("feat"))}</span>`:""}<span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}${j.salary?`<span class="badge b-sal">${esc(j.salary)}</span>`:""}<span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="btn vbtn" data-id="${j.id}">${esc(t("view"))}</button></article>`; }).join("")
-    : `<div class="card empty">${esc(t("none"))}</div>`;
+  const one = j => { const o = isOpen(j); return `<article class="card job${o?"":" closed"}"><div class="av" aria-hidden="true">${esc((j.company||"?")[0])}</div><div><h3>${esc(j.title)}</h3><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span><span>⏳ ${esc(t(o?"closes":"closedOn"))} ${fmt(j.deadline)}</span>${j.phone?`<span>📞 ${esc(j.phone)}</span>`:""}</div><div class="tags">${j.vip&&o?`<span class="badge b-vip">${esc(t("feat"))}</span>`:""}<span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}${j.salary?`<span class="badge b-sal">${esc(j.salary)}</span>`:""}<span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="btn vbtn" data-id="${j.id}">${esc(t("view"))}</button></article>`; };
+  // በአንድ ድርጅት ስር ያሉ ሥራዎች በአንድ ካርድ ላይ
+  const gk = j => (j.company || "").trim().toLowerCase().replace(/\s+/g, " ") || j.id, groups = [], gi = new Map();
+  list.forEach(j => { const k = gk(j); if(!gi.has(k)){ gi.set(k, groups.length); groups.push([]); } groups[gi.get(k)].push(j); });
+  const row = j => { const o = isOpen(j); return `<div class="gr${o?"":" closed"}"><div class="gt"><b>${esc(j.title)}</b><div class="tags">${j.vip&&o?`<span class="badge b-vip">${esc(t("feat"))}</span>`:""}<span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}${j.salary?`<span class="badge b-sal">${esc(j.salary)}</span>`:""}<span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span><span class="dl">⏳ ${esc(t(o?"closes":"closedOn"))} ${fmt(j.deadline)}</span></div></div><button class="btn vbtn" data-id="${j.id}">${esc(t("view"))}</button></div>`; };
+  const grp = g => { if(g.length === 1) return one(g[0]); const f = g[0];
+    return `<article class="card grp${g.some(isOpen)?"":" closed"}"><div class="gh"><div class="av" aria-hidden="true">${esc((f.company||"?")[0])}</div><div><h3>${esc(f.company)}</h3><div class="meta">${f.location?`<span>📍 ${esc(f.location)}</span>`:""}${f.phone?`<span>📞 ${esc(f.phone)}</span>`:""}</div></div><span class="badge b-type">${esc(t("grpN", g.length))}</span></div><div class="gl">${g.map(row).join("")}</div></article>`; };
+  $("#jobs").innerHTML = groups.length ? groups.map(grp).join("") : `<div class="card empty">${esc(t("none"))}</div>`;
 }
 
 $("#jobs").onclick = e => {
@@ -171,7 +181,7 @@ $("#jobs").onclick = e => {
   const how = !o ? esc(t("closedNote")) : u ? `<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">${esc(t("applyOnline"))}</a>` : ap ? esc(ap) : esc(t("callUs", PHONE, EMAIL));
   const tel = o && j.phone ? `<br>📞 <a href="tel:${esc(String(j.phone).replace(/[^\d+]/g,""))}">${esc(j.phone)}</a>` : "";
   const info = [j.gender ? `<b>${esc(t("gender"))}:</b> ${esc(trG(j.gender))}` : "", j.address ? `<b>${esc(t("address"))}:</b> ${esc(j.address)}` : ""].filter(Boolean).join(" · ");
-  d.innerHTML = `<div class="dh"><div><h2 id="dt">${esc(j.title)}</h2><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span></div><div class="tags"><span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}<span class="badge b-sal">${esc(j.salary||t("nosal"))}</span><span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="x" aria-label="${esc(t("close"))}" id="cx">×</button></div><div class="db"><p style="margin-top:0"><b>${esc(t("deadline"))}:</b> ${fmt(j.deadline)} · <b>${esc(t("sector"))}:</b> ${esc(trS(j.sector))}${info?`<br>${info}`:""}</p>${mu?`<p style="margin:0 0 10px"><a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener">${esc(t("viewMap"))}</a></p>`:""}<div>${esc(j.desc)}</div>${j.requirements?`<h3 style="font-size:16px;margin:14px 0 4px">${esc(t("req"))}</h3><div>${esc(j.requirements)}</div>`:""}<div class="note"><b>${esc(t("how"))}</b><br>${how}${tel}</div></div>`;
+  d.innerHTML = `<div class="dh"><div><h2 id="dt">${esc(j.title)}</h2><div class="meta"><span>🏢 ${esc(j.company)}</span><span>📍 ${esc(j.location)}</span></div><div class="tags"><span class="badge b-type">${esc(trT(j.type))}</span>${qb(j)}<span class="badge b-sal">${esc(j.salary||t("nosal"))}</span><span class="badge ${o?"b-open":"b-closed"}">${esc(t(o?"open":"closed"))}</span></div></div><button class="x" aria-label="${esc(t("close"))}" id="cx">×</button></div><div class="db"><p style="margin-top:0"><b>${esc(t("deadline"))}:</b> ${fmt(j.deadline)} · <b>${esc(t("sector"))}:</b> ${esc(trS(j.sector))}${info?`<br>${info}`:""}</p>${mu?`<p style="margin:0 0 10px"><a class="btn ghost sm" href="${esc(mu)}" target="_blank" rel="noopener">${esc(t("viewMap"))}</a></p>`:""}${safeLogo(j.photo)?`<img class="jphoto" src="${esc(safeLogo(j.photo))}" alt="" loading="lazy">`:""}<div>${esc(j.desc)}</div>${j.requirements?`<h3 style="font-size:16px;margin:14px 0 4px">${esc(t("req"))}</h3><div>${esc(j.requirements)}</div>`:""}<div class="note"><b>${esc(t("how"))}</b><br>${how}${tel}</div></div>`;
   d.showModal(); $("#cx").onclick = () => d.close();
 };
 $("#dlg").addEventListener("click", e => { if(e.target.id==="dlg") e.target.close(); });
